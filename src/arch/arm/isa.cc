@@ -93,6 +93,7 @@ ISA::ISA(Params *p) : BaseISA(p), system(NULL),
         sveVL = system->sveVL();
         haveLSE = system->haveLSE();
     } else {
+      //change when returning to 64-bit mode
         highestELIs64 = true; // ArmSystem::highestELIs64 does the same
         haveSecurity = haveLPAE = haveVirtualization = false;
         haveCrypto = true;

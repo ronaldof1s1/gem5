@@ -120,7 +120,6 @@ SimpleThread::takeOverFrom(ThreadContext *oldContext)
 {
     ::takeOverFrom(*this, *oldContext);
     decoder.takeOverFrom(oldContext->getDecoderPtr());
-
     kernelStats = oldContext->getKernelStats();
     funcExeInst = oldContext->readFuncExeInst();
     storeCondFailures = 0;

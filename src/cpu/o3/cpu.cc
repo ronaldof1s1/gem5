@@ -59,6 +59,7 @@
 #include "cpu/thread_context.hh"
 #include "debug/Activity.hh"
 #include "debug/Drain.hh"
+#include "debug/MyDebugFlag.hh"
 #include "debug/O3CPU.hh"
 #include "debug/Quiesce.hh"
 #include "enums/MemoryMode.hh"
@@ -141,6 +142,8 @@ FullO3CPU<Impl>::FullO3CPU(DerivO3CPUParams *params)
       system(params->system),
       lastRunningCycle(curCycle())
 {
+
+    DPRINTF(MyDebugFlag, "cpu.cc isa: \n");
     if (!params->switched_out) {
         _status = Running;
     } else {
@@ -222,6 +225,9 @@ FullO3CPU<Impl>::FullO3CPU(DerivO3CPUParams *params)
     for (ThreadID tid = 0; tid < numThreads; tid++) {
         isa[tid] = params->isa[tid];
         assert(RenameMode<TheISA::ISA>::equalsInit(isa[tid], isa[0]));
+        DPRINTF(MyDebugFlag, "cpu.cc vecmode: %d\n", vecMode);
+        DPRINTF(MyDebugFlag, "cpu.cc vecRegRenameMode:
+         %d\n", isa[tid]->vecRegRenameMode());
 
         // Only Alpha has an FP zero register, so for other ISAs we
         // use an invalid FP register index to avoid special treatment
@@ -865,6 +871,7 @@ FullO3CPU<Impl>::switchRenameMode(ThreadID tid, UnifiedFreeList* freelist)
     // new_mode is the new vector renaming mode
     auto new_mode = RenameMode<TheISA::ISA>::mode(pc);
 
+    DPRINTF(MyDebugFlag, "cpu.cc new_mode %d\n",new_mode);
     // We update vecMode only if there has been a change
     if (new_mode != vecMode) {
         vecMode = new_mode;

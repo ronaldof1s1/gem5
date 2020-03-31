@@ -437,6 +437,7 @@ ThreadContext::pcState() const
 {
     ArmISA::CPSR cpsr = readMiscRegNoEffect(ArmISA::MISCREG_CPSR);
     ArmISA::PCState pc;
+    std::cout << "thread_context.cc: cpsr.width " << cpsr.width << std::endl;
 
     pc.thumb(cpsr.t);
     pc.nextThumb(pc.thumb());

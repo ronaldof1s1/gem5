@@ -160,13 +160,20 @@ if options.bench:
             sys.exit(1)
 elif options.cmd:
     multiprocesses, numThreads = get_processes(options)
+    #if options.smt:
+     #   numThreads = numThreads*2
 else:
     print("No workload specified. Exiting!\n", file=sys.stderr)
     sys.exit(1)
 
 
 (CPUClass, test_mem_mode, FutureClass) = Simulation.setCPUClass(options)
+
+
+print('numthreads: {}'.format(numThreads))
 CPUClass.numThreads = numThreads
+if options.checkpoint_restore:
+    FutureClass.numThreads = numThreads
 
 # Check -- do not allow SMT with multiple CPUs
 if options.smt and options.num_cpus > 1:
@@ -244,6 +251,86 @@ for i in range(np):
         indirectBPClass = \
             ObjectList.indirect_bp_list.get(options.indirect_bp_type)
         system.cpu[i].branchPred.indirectBranchPred = indirectBPClass()
+
+    if options.cpu_type == "DerivO3CPU" and options.checkpoint_restore == None:
+
+
+        # system.cpu[i].numIQEntries = options.numIQEntries
+        # system.cpu[i].numROBEntries = options.numROBEntries
+        system.cpu[i].renameWidth = options.width
+        system.cpu[i].dispatchWidth = options.width
+        system.cpu[i].issueWidth = options.width
+        # system.cpu[i].wbWidth = options.width
+        system.cpu[i].commitWidth = options.width
+        # system.cpu[i].squashWidth = options.width
+        # system.cpu[i].numPhysIntRegs = options.regs
+        # system.cpu[i].numPhysFloatRegs = options.regs
+        # system.cpu[i].LQEntries = options.lsq
+        # system.cpu[i].SQEntries = options.lsq
+
+        # system.mmap_using_noreserve = True
+
+        if options.nehalem:
+            system.cpu[i].fetchWidth = 6
+            system.cpu[i].decodeWidth = 4
+            system.cpu[i].renameWidth = 4
+            system.cpu[i].dispatchWidth = 4
+            system.cpu[i].issueWidth = 4
+            system.cpu[i].wbWidth = 4
+            system.cpu[i].commitWidth = 6
+            system.cpu[i].squashWidth = 8
+            system.cpu[i].LQEntries = 48
+            system.cpu[i].SQEntries = 32
+            system.cpu[i].numIQEntries = 36
+            system.cpu[i].numROBEntries = 128
+            system.cpu[i].fetchQueueSize = 18
+            system.cpu[i].fuPool = NehalemFUPool()
+
+
+        if options.hugeCPU:
+            system.cpu[i].fetchWidth = 64
+            system.cpu[i].decodeWidth = 64
+            system.cpu[i].renameWidth = 64
+            system.cpu[i].dispatchWidth = 64
+            system.cpu[i].issueWidth = 64
+            system.cpu[i].wbWidth = 64
+            system.cpu[i].commitWidth = 64
+            system.cpu[i].squashWidth = 64
+            system.cpu[i].LQEntries = 512
+            system.cpu[i].SQEntries = 512
+            system.cpu[i].numIQEntries = 512
+            system.cpu[i].numROBEntries = 512
+            system.cpu[i].fetchQueueSize = 512
+
+            system.cpu[i].numPhysVecPredRegs = 256
+
+            system.cpu[i].fuPool = HUGEFUPool()
+
+
+        if options.smallCPU:
+            system.cpu[i].fetchWidth = 1
+            system.cpu[i].decodeWidth = 1
+            system.cpu[i].renameWidth = 1
+            system.cpu[i].dispatchWidth = 1
+            system.cpu[i].issueWidth = 1
+            system.cpu[i].wbWidth = 1
+            system.cpu[i].commitWidth = 1
+            system.cpu[i].squashWidth = 1
+            system.cpu[i].LQEntries = 16
+            system.cpu[i].SQEntries = 16
+            system.cpu[i].numIQEntries = 16
+            system.cpu[i].numROBEntries = 16
+            system.cpu[i].fetchQueueSize = 16
+
+            system.cpu[i].numPhysVecPredRegs = 64
+
+            system.cpu[i].fuPool = SmallFUPool()
+
+        # if options.smt:
+        #     system.cpu[i].numPhysVecPredRegs *= 4
+
+
+
 
     system.cpu[i].createThreads()
 

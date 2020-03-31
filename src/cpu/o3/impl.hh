@@ -77,7 +77,7 @@ struct O3CPUImpl
     typedef O3CPU CPUType;
 
     enum {
-      MaxWidth = 8,
+      MaxWidth = 64,
       MaxThreads = 4
     };
 };

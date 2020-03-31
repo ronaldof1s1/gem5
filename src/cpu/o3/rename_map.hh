@@ -54,6 +54,7 @@
 #include "cpu/o3/free_list.hh"
 #include "cpu/o3/regfile.hh"
 #include "cpu/reg_class.hh"
+#include "debug/MyDebugFlag.hh"
 #include "enums/VecRegRenameMode.hh"
 
 /**
@@ -279,6 +280,8 @@ class UnifiedRenameMap
             return  vecMap.lookup(arch_reg);
 
           case VecElemClass:
+            DPRINTF(MyDebugFlag, "vec elem class in
+            lookup with vecmode = %d\n",vecMode);
             assert(vecMode == Enums::Elem);
             return  vecElemMap.lookup(arch_reg);
 

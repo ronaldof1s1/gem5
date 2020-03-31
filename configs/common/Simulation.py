@@ -81,6 +81,7 @@ def setCPUClass(options):
         if options.restore_with_cpu != options.cpu_type:
             CPUClass = TmpClass
             TmpClass, test_mem_mode = getCPUClass(options.restore_with_cpu)
+
     elif options.fast_forward:
         CPUClass = TmpClass
         TmpClass = AtomicSimpleCPU
@@ -266,22 +267,42 @@ def scriptCheckpoints(options, maxtick, cptdir):
     return exit_event
 
 def benchCheckpoints(options, maxtick, cptdir):
+
+    if options.dump_period != None :
+                maxtick = options.dump_period*1000 + m5.curTick()
+
+    if options.warmup_insts != None :
+                m5.stats.dump()
+                m5.stats.reset()
+
     exit_event = m5.simulate(maxtick - m5.curTick())
     exit_cause = exit_event.getCause()
 
     num_checkpoints = 0
     max_checkpoints = options.max_checkpoints
 
-    while exit_cause == "checkpoint":
-        m5.checkpoint(joinpath(cptdir, "cpt.%d"))
-        num_checkpoints += 1
-        if num_checkpoints == max_checkpoints:
-            exit_cause = "maximum %d checkpoints dropped" % max_checkpoints
-            break
+    while num_checkpoints < max_checkpoints and \
+                exit_cause == "simulate() limit reached":
 
-        exit_event = m5.simulate(maxtick - m5.curTick())
-        exit_cause = exit_event.getCause()
+                while exit_cause == "checkpoint":
+                        m5.checkpoint(joinpath(cptdir, "cpt.%d"))
+                        num_checkpoints += 1
+                        if num_checkpoints == max_checkpoints:
+                                exit_cause = \
+                                "maximum %d checkpoints \
+                                dropped" % max_checkpoints
+                                break
 
+                        exit_event = m5.simulate(maxtick - m5.curTick())
+                        exit_cause = exit_event.getCause()
+
+
+                if options.dump_period != None :
+                        m5.stats.dump()
+                        m5.stats.reset()
+                        maxtick = maxtick + options.dump_period*1000
+                        exit_event = m5.simulate(maxtick - m5.curTick())
+                        exit_cause = exit_event.getCause()
     return exit_event
 
 # Set up environment for taking SimPoint checkpoints
@@ -488,6 +509,20 @@ def run(options, root, testsys, cpu_class):
                 switch_cpus[i].branchPred.indirectBranchPred = \
                     IndirectBPClass()
 
+            if options.cpu_type == "DerivO3CPU":
+                switch_cpus[i].renameWidth = options.width
+                switch_cpus[i].dispatchWidth = options.width
+                switch_cpus[i].issueWidth = options.width
+                # switch_cpus[i].wbWidth = options.width
+                switch_cpus[i].commitWidth = options.width
+                # switch_cpus[i].squashWidth = options.width
+
+                if options.smt:
+                    switch_cpus[i].numPhysVecPredRegs *= 2
+                    switch_cpus[i].smtNumFetchingThreads = 2
+                    switch_cpus[i].smtFetchPolicy = 'RoundRobin'
+                    switch_cpus[i].workload.append(switch_cpus[i].workload[0])
+
         # If elastic tracing is enabled attach the elastic trace probe
         # to the switch CPUs
         if options.elastic_trace_en:
@@ -545,6 +580,31 @@ def run(options, root, testsys, cpu_class):
             switch_cpus_1[i].clk_domain = testsys.cpu[i].clk_domain
             switch_cpus[i].isa = testsys.cpu[i].isa
             switch_cpus_1[i].isa = testsys.cpu[i].isa
+
+            print("\n\nfrom simulation\n\n")
+            # switch_cpus_1[i].numIQEntries = options.numIQEntries
+            # switch_cpus_1[i].numROBEntries = options.numROBEntries
+            switch_cpus_1[i].renameWidth = options.width
+            switch_cpus_1[i].dispatchWidth = options.width
+            switch_cpus_1[i].issueWidth = options.width
+            # switch_cpus_1[i].wbWidth = options.width
+            switch_cpus_1[i].commitWidth = options.width
+            # switch_cpus_1[i].squashWidth = options.width
+            # switch_cpus_1[i].numPhysIntRegs = options.regs
+            # switch_cpus_1[i].numPhysFloatRegs = options.regs
+            # switch_cpus_1[i].LQEntries = options.lsq
+            # switch_cpus_1[i].SQEntries = options.lsq
+
+            # bpClass = BPConfig.get(options.bp_type)
+            # switch_cpus_1[i].branchPred = bpClass()
+
+            if options.smt:
+                switch_cpus_1[i].smtNumFetchingThreads = 2
+                switch_cpus_1[i].smtFetchPolicy = 'RoundRobin'
+
+
+
+
 
             # if restoring, make atomic cpu simulate only a few instructions
             if options.checkpoint_restore != None:
@@ -669,6 +729,8 @@ def run(options, root, testsys, cpu_class):
             exit_event = m5.simulate(10000)
         print("Switched CPUS @ tick %s" % (m5.curTick()))
 
+
+
         m5.switchCpus(testsys, switch_cpu_list)
 
         if options.standard_switch:
@@ -681,8 +743,11 @@ def run(options, root, testsys, cpu_class):
             else:
                 exit_event = m5.simulate(options.standard_switch)
             print("Switching CPUS @ tick %s" % (m5.curTick()))
+
+
             print("Simulation ends instruction count:%d" %
                     (testsys.switch_cpus_1[0].max_insts_any_thread))
+
             m5.switchCpus(testsys, switch_cpu_list1)
 
     # If we're taking and restoring checkpoints, use checkpoint_dir

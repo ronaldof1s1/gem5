@@ -577,7 +577,9 @@ BaseCPU::takeOverFrom(BaseCPU *oldCPU)
         ThreadContext *newTC = threadContexts[i];
         ThreadContext *oldTC = oldCPU->threadContexts[i];
 
+
         newTC->takeOverFrom(oldTC);
+
 
         CpuEvent::replaceThreadContext(oldTC, newTC);
 
@@ -607,6 +609,7 @@ BaseCPU::takeOverFrom(BaseCPU *oldCPU)
 
         // Checker whether or not we have to transfer CheckerCPU
         // objects over in the switch
+
         CheckerCPU *oldChecker = oldTC->getCheckerCpuPtr();
         CheckerCPU *newChecker = newTC->getCheckerCpuPtr();
         if (oldChecker && newChecker) {
@@ -630,6 +633,7 @@ BaseCPU::takeOverFrom(BaseCPU *oldCPU)
         }
     }
 
+
     interrupts = oldCPU->interrupts;
     for (ThreadID tid = 0; tid < numThreads; tid++) {
         interrupts[tid]->setCPU(this);
@@ -643,6 +647,7 @@ BaseCPU::takeOverFrom(BaseCPU *oldCPU)
         if (profileEvent)
             schedule(profileEvent, curTick());
     }
+
 
     // All CPUs have an instruction and a data port, and the new CPU's
     // ports are dangling while the old CPU has its ports connected

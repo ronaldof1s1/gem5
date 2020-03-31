@@ -237,6 +237,7 @@ ArmSystem::haveVirtualization(ThreadContext *tc)
 bool
 ArmSystem::highestELIs64(ThreadContext *tc)
 {
+      //change when returning to 64-bit mode
     return FullSystem? getArmSystem(tc)->highestELIs64() : true;
 }
 

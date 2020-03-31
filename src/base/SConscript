@@ -127,6 +127,8 @@ DebugFlag('SQL', "SQL queries sent to the server")
 DebugFlag('Stats', "Statistics management")
 DebugFlag('StatEvents', "Statistics event tracking")
 
+#DebugFlag('MyDebugFlag', "my debug flag")
+
 CompoundFlag('GDBAll',
     [ 'GDBMisc', 'GDBAcc', 'GDBRead', 'GDBWrite', 'GDBSend', 'GDBRecv',
       'GDBExtra' ],

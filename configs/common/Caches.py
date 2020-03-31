@@ -51,7 +51,8 @@ from m5.objects import *
 # specific instantiations.
 
 class L1Cache(Cache):
-    assoc = 2
+    size = '32kB'
+    assoc = 8
     tag_latency = 2
     data_latency = 2
     response_latency = 2
@@ -67,13 +68,24 @@ class L1_DCache(L1Cache):
     pass
 
 class L2Cache(Cache):
-    assoc = 8
+    size='256kB'
+    assoc = 4
     tag_latency = 20
     data_latency = 20
     response_latency = 20
     mshrs = 20
     tgts_per_mshr = 12
     write_buffers = 8
+
+class L3Cache(Cache):
+    size = '2MB'
+    assoc = 16
+    tag_latency = 22
+    data_latency = 22
+    response_latency = 22
+    mshrs = 64
+    tgts_per_mshr = 12
+    write_buffers = 16
 
 class IOCache(Cache):
     assoc = 8
@@ -85,7 +97,7 @@ class IOCache(Cache):
     tgts_per_mshr = 12
 
 class PageTableWalkerCache(Cache):
-    assoc = 2
+    assoc = 4
     tag_latency = 2
     data_latency = 2
     response_latency = 2

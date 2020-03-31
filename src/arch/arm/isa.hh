@@ -52,9 +52,10 @@
 #include "arch/generic/isa.hh"
 #include "arch/generic/traits.hh"
 #include "debug/Checkpoint.hh"
+#include "debug/MyDebugFlag.hh"
+#include "enums/DecoderFlavour.hh"
 #include "enums/VecRegRenameMode.hh"
 #include "sim/sim_object.hh"
-#include "enums/DecoderFlavour.hh"
 
 struct ArmISAParams;
 struct DummyArmISADeviceParams;
@@ -780,6 +781,8 @@ struct RenameMode<ArmISA::ISA>
     static Enums::VecRegRenameMode
     init(const ArmISA::ISA* isa)
     {
+        DPRINTF(MyDebugFlag, "isa.hh: vecregrenamemode
+        %d\n", isa->vecRegRenameMode());
         return isa->vecRegRenameMode();
     }
 
@@ -787,8 +790,12 @@ struct RenameMode<ArmISA::ISA>
     mode(const ArmISA::PCState& pc)
     {
         if (pc.aarch64()) {
+            DPRINTF(MyDebugFlag, "aarch64\n");
+
             return Enums::Full;
         } else {
+            DPRINTF(MyDebugFlag, "aarch32\n");
+
             return Enums::Elem;
         }
     }

@@ -51,6 +51,7 @@
 #include "config/the_isa.hh"
 #include "cpu/o3/thread_context.hh"
 #include "cpu/quiesce_event.hh"
+#include "debug/MyDebugFlag.hh"
 #include "debug/O3CPU.hh"
 
 template <class Impl>
@@ -72,8 +73,10 @@ void
 O3ThreadContext<Impl>::takeOverFrom(ThreadContext *old_context)
 {
     ::takeOverFrom(*this, *old_context);
+
     TheISA::Decoder *newDecoder = getDecoderPtr();
     TheISA::Decoder *oldDecoder = old_context->getDecoderPtr();
+
     newDecoder->takeOverFrom(oldDecoder);
 
     thread->kernelStats = old_context->getKernelStats();
@@ -186,11 +189,16 @@ O3ThreadContext<Impl>::copyArchRegs(ThreadContext *tc)
 {
     // Set vector renaming mode before copying registers
     cpu->vecRenameMode(RenameMode<TheISA::ISA>::mode(tc->pcState()));
+    DPRINTF(MyDebugFlag, "thread_context_impl.hh
+    vecrenamemode: %d\n",cpu->vecRenameMode());
 
     // Prevent squashing
+    DPRINTF(MyDebugFlag, "before squashing and copying registers\n");
     thread->noSquashFromTC = true;
     TheISA::copyRegs(tc, this);
     thread->noSquashFromTC = false;
+    DPRINTF(MyDebugFlag, "after squashing and copying registers\n");
+
 
     if (!FullSystem)
         this->thread->funcExeInst = tc->readFuncExeInst();

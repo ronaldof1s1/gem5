@@ -116,6 +116,19 @@ def addNoISAOptions(parser):
 
     parser.add_option("--memchecker", action="store_true")
 
+    # O3 Options
+    parser.add_option("--numIQEntries", type="int", default=64)
+    parser.add_option("--numROBEntries", type="int", default=192)
+    parser.add_option("--width", type="int", default=8)
+    parser.add_option("--regs", type="int", default=256)
+    parser.add_option("--lsq", type="int", default=32)
+    parser.add_option("--btb", type="int", default=4096)
+    parser.add_option("--predSize", type="int", default=2048)
+
+    parser.add_option("--nehalem", action="store_true")
+    parser.add_option("--hugeCPU", action="store_true")
+    parser.add_option("--smallCPU", action="store_true")
+
     # Cache Options
     parser.add_option("--external-memory-system", type="string",
                       help="use external ports of this port_type for caches")
@@ -123,6 +136,7 @@ def addNoISAOptions(parser):
                       help="use external port for SystemC TLM cosimulation")
     parser.add_option("--caches", action="store_true")
     parser.add_option("--l2cache", action="store_true")
+    parser.add_option("--l3cache", action="store_true")
     parser.add_option("--num-dirs", type="int", default=1)
     parser.add_option("--num-l2caches", type="int", default=1)
     parser.add_option("--num-l3caches", type="int", default=1)
@@ -271,6 +285,9 @@ def addCommonOptions(parser):
                       help="Link delay in seconds\nDEFAULT: 10us")
 
     # Run duration options
+    parser.add_option("-D", "--dump-period", action="store", type="int",
+          default=None, help="""Period in ns to dump stats \
+                              (default: only dump in the end)""")
     parser.add_option("-I", "--maxinsts", action="store", type="int",
                       default=None, help="""Total number of instructions to
                                             simulate (default: run forever)""")

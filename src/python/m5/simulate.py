@@ -254,7 +254,11 @@ def switchCpus(system, cpuList, verbose=True):
     """
 
     if verbose:
-        print("switching cpus")
+        print("switching cpus:")
+        for old_cpu, new_cpu in cpuList:
+            old_cpu_name = old_cpu.__class__.__name__
+            new_cpu_name = new_cpu.__class__.__name__
+            print("Switching from %s to %s" % (old_cpu_name, new_cpu_name))
 
     if not isinstance(cpuList, list):
         raise RuntimeError("Must pass a list to this function")
@@ -299,10 +303,13 @@ def switchCpus(system, cpuList, verbose=True):
     # Now all of the CPUs are ready to be switched out
     for old_cpu, new_cpu in cpuList:
         old_cpu.switchOut()
+    print("Old CPUs switched OUT")
+
 
     # Change the memory mode if required. We check if this is needed
     # to avoid printing a warning if no switch was performed.
     if system.getMemoryMode() != memory_mode:
+        print("Changing Memory Mode")
         # Flush the memory system if we are switching to a memory mode
         # that disables caches. This typically happens when switching to a
         # hardware virtualized CPU.
@@ -311,9 +318,12 @@ def switchCpus(system, cpuList, verbose=True):
             memInvalidate(system)
 
         _changeMemoryMode(system, memory_mode)
+        print("Memory Mode changed")
 
     for old_cpu, new_cpu in cpuList:
         new_cpu.takeOverFrom(old_cpu)
+
+    print("New CPUs took over")
 
 def notifyFork(root):
     for obj in root.descendants():

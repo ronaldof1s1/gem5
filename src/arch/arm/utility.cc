@@ -49,6 +49,7 @@
 #include "cpu/base.hh"
 #include "cpu/checker/cpu.hh"
 #include "cpu/thread_context.hh"
+#include "debug/MyDebugFlag.hh"
 #include "mem/fs_translating_port_proxy.hh"
 #include "sim/full_system.hh"
 
@@ -139,6 +140,7 @@ static void
 copyVecRegs(ThreadContext *src, ThreadContext *dest)
 {
     auto src_mode = RenameMode<ArmISA::ISA>::mode(src->pcState());
+    DPRINTF(MyDebugFlag, "utility.cc: src mode: %d\n", src_mode);
 
     // The way vector registers are copied (VecReg vs VecElem) is relevant
     // in the O3 model only.
@@ -167,6 +169,8 @@ copyRegs(ThreadContext *src, ThreadContext *dest)
 
     for (int i = 0; i < NumMiscRegs; i++)
         dest->setMiscRegNoEffect(i, src->readMiscRegNoEffect(i));
+
+    DPRINTF(MyDebugFlag, "after copying misc regs\n");
 
     copyVecRegs(src, dest);
 
