@@ -781,8 +781,8 @@ struct RenameMode<ArmISA::ISA>
     static Enums::VecRegRenameMode
     init(const ArmISA::ISA* isa)
     {
-        DPRINTF(MyDebugFlag, "isa.hh: vecregrenamemode
-        %d\n", isa->vecRegRenameMode());
+        DPRINTF(MyDebugFlag, "isa.hh: vecregrenamemode "
+        "%d\n", isa->vecRegRenameMode());
         return isa->vecRegRenameMode();
     }
 

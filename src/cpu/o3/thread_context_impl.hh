@@ -189,8 +189,8 @@ O3ThreadContext<Impl>::copyArchRegs(ThreadContext *tc)
 {
     // Set vector renaming mode before copying registers
     cpu->vecRenameMode(RenameMode<TheISA::ISA>::mode(tc->pcState()));
-    DPRINTF(MyDebugFlag, "thread_context_impl.hh
-    vecrenamemode: %d\n",cpu->vecRenameMode());
+    DPRINTF(MyDebugFlag, "thread_context_impl.hh"
+    "vecrenamemode: %d\n",cpu->vecRenameMode());
 
     // Prevent squashing
     DPRINTF(MyDebugFlag, "before squashing and copying registers\n");

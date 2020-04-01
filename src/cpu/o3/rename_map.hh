@@ -280,8 +280,8 @@ class UnifiedRenameMap
             return  vecMap.lookup(arch_reg);
 
           case VecElemClass:
-            DPRINTF(MyDebugFlag, "vec elem class in
-            lookup with vecmode = %d\n",vecMode);
+            DPRINTF(MyDebugFlag, "vec elem class in"
+            "lookup with vecmode = %d\n",vecMode);
             assert(vecMode == Enums::Elem);
             return  vecElemMap.lookup(arch_reg);
 

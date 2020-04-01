@@ -226,8 +226,8 @@ FullO3CPU<Impl>::FullO3CPU(DerivO3CPUParams *params)
         isa[tid] = params->isa[tid];
         assert(RenameMode<TheISA::ISA>::equalsInit(isa[tid], isa[0]));
         DPRINTF(MyDebugFlag, "cpu.cc vecmode: %d\n", vecMode);
-        DPRINTF(MyDebugFlag, "cpu.cc vecRegRenameMode:
-         %d\n", isa[tid]->vecRegRenameMode());
+        DPRINTF(MyDebugFlag, "cpu.cc vecRegRenameMode: "
+         "%d\n", isa[tid]->vecRegRenameMode());
 
         // Only Alpha has an FP zero register, so for other ISAs we
         // use an invalid FP register index to avoid special treatment
